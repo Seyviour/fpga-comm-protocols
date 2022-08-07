@@ -26,7 +26,7 @@ architecture RTL of UART_RX is
                     CLEANUP);
 
 
-    signal r_Clock_Count: std_logic_vector(7 downto 0);
+    signal r_Clock_Count: integer;
     signal r_Bit_Index: integer range 0 to 7; --index of bit to write to
     signal r_RX_Byte: std_logic_vector(7 downto 0); -- hold data while receiving
     signal r_RX_DV: std_logic; -- falling edge indicates data is valid (all bits have being received)
@@ -40,16 +40,16 @@ begin
         if rising_edge(i_Clock) then
             case r_RX_STATE is  
                 when IDLE =>
-                    r_RX_DV <= 0;
+                    r_RX_DV <= '0';
                     if (i_RX_Serial = '0') then
                         r_RX_STATE <= RX_START_BIT;
-                        r_Clock_Count <= '1'; 
+                        r_Clock_Count <= 1; 
                     else
                         r_RX_STATE <= IDLE;
                     end if;
 
                 when RX_START_BIT =>
-                    r_RX_DV <= 0;
+                    r_RX_DV <= '0';
                     if (r_Clock_Count = (CLOCKS_PER_BIT)/2) then
                         if (i_RX_Serial = '0') then
                             r_Clock_Count <= 0;
@@ -103,6 +103,8 @@ begin
         end if;
     end process;
 
+    o_RX_Byte <= r_RX_Byte;
+    o_RX_DV <= r_RX_DV;
     
 
 end architecture;
