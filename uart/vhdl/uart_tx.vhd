@@ -1,5 +1,5 @@
 -- This transmitter draws inspiration from the Nandland implementation
--- of a UART receiver
+-- of a UART receiver: https://edaplayground.com/x/4Lyz
 
 
 library ieee;

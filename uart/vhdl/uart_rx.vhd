@@ -1,5 +1,5 @@
 -- This is a translation of the verilog Nandland UART receiver to VHDL
--- Find the reference implementation here: 
+-- Find the reference implementation here: https://edaplayground.com/x/4Lyz
 
 library ieee;
 use ieee.std_logic_1164.all;
