@@ -26,8 +26,8 @@ architecture RLT of UART_TX is
                         CLEANUP);
 
     signal r_TX_STATE: UART_TX_STATE;
-    signal r_Clock_Count: unsigned;
-    signal r_TX_Bit_Index: unsigned range 0 to 7;
+    signal r_Clock_Count: integer;
+    signal r_TX_Bit_Index: integer range 0 to 7;
     signal r_TX_Bit: std_logic;
     signal r_TX_Byte: std_logic_vector(7 downto 0);
     
@@ -56,7 +56,7 @@ begin
                     r_Clock_Count <= r_Clock_Count + 1;
                 
                 else
-                    r_Clock_Count <= '0';
+                    r_Clock_Count <= 0;
                     if (i_TX_DV = '1') then
                         r_TX_STATE <= TX_START_BIT; 
                         r_TX_Byte <= i_TX_Byte;
@@ -70,7 +70,8 @@ begin
     
             when TX_START_BIT =>
                 -- Transmit '0' for one bit length
-                if (r_Clock_Count < (CLOCKS_PER_BIT-1)) then 
+                if (r_Clock_Count < (CLOCKS_PER_BIT-1)) then
+                    r_TX_Bit <= '0';
                     r_Clock_Count <= r_Clock_Count + 1; 
                     r_TX_STATE <= TX_START_BIT;
                 else
@@ -93,14 +94,14 @@ begin
                     if (r_TX_Bit_Index < 7) then
                         r_TX_Bit_Index <= r_TX_Bit_Index + 1;
                     else
-                        -- Data transmission completed, movet to stop; 
+                        -- Data transmission completed, movet to TX_STOP_STATE; 
                         r_TX_STATE <= TX_STOP_BIT;
                         r_TX_Bit_Index <= 0; 
                     end if; 
                 end if;
 
             when others =>
-                IDLE;
+                r_TX_STATE <= IDLE;
         end case;
     end process;
 
