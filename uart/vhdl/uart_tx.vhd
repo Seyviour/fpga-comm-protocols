@@ -1,3 +1,7 @@
+-- This transmitter draws inspiration from the Nandland implementation
+-- of a UART receiver
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

@@ -1,3 +1,6 @@
+-- This is a translation of the verilog Nandland UART receiver to VHDL
+-- Find the reference implementation here: 
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
