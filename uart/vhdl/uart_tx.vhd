@@ -62,14 +62,19 @@ begin
                 if (r_Clock_Count < (CLOCKS_PER_BIT-1)) then
                     r_Clock_Count <= r_Clock_Count + 1;
                 
+                if (i_TX_DV = '1') then
+                    r_Received <= '1'; 
+                    r_TX_Byte <= i_TX_Byte; 
+                end if; 
+                
                 else
                     r_Clock_Count <= 0;
-                    if (i_TX_DV = '1') then
-                        r_Received <= '1'; 
-                        r_TX_STATE <= TX_START_BIT; 
-                        r_TX_Byte <= i_TX_Byte;
+                    if (r_Received = '1') then 
+                        r_TX_STATE <= TX_START_BIT;
+                        r_Received <= '0'; 
                     else
-                        r_TX_STATE <= IDLE; 
+                        r_TX_STATE <= IDLE;
+                        r_Received <= '0';
                     end if; 
             
                 end if; 
