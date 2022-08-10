@@ -129,7 +129,6 @@ begin
         data := data + 1; 
         TX_DV <= '0';
         waitTillUARTReady;
-        waitTillRXValid;
         assert TX_Byte = RX_Byte
             report "Transmission error: Received data different from transmitted data"
             severity note;
