@@ -48,6 +48,12 @@ architecture TEST of TB_uart is
             i_TX_DV: in std_logic;
             busy: out std_logic
         );
+
+    
+
+
+    
+
     end component;
 
 
@@ -74,7 +80,7 @@ begin
             t:= t + 100 ps;
             wait for 100 ps;  
             clk <= not clk;
-        exit when t >= 100000 ps; 
+        exit when t >= 1000000 ns; 
         
         end loop;
         wait; 
@@ -82,19 +88,18 @@ begin
 
     main_process:
     process
-        variable data: unsigned (7 downto 0) := "00001111";
+        variable data: unsigned (7 downto 0) := "00101010";
     begin
         waitTillUARTReady;
         report "here";
         waitForClockToFall;
         TX_Byte <= std_logic_vector(data); 
         TX_DV <= '1';
-        waitTillUARTBusy;
         waitForClockToFall;
         data := data + 1; 
         TX_DV <= '0';
 
-        wait; 
+        
         
     end process;
 
