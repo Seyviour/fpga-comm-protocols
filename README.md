@@ -5,9 +5,9 @@ This repository will contain implementations of common communication protocols, 
 ## Currently Implemented
 
    * UART
-      * Receiver: YES
-      * Transmitter: YES
-      * Testbench: NO
+      * Receiver: YES (VHDL)
+      * Transmitter: YES (VHDL)
+      * Testbench: YES (VHDL)
 
    * SPI
       * Receiver: NO
