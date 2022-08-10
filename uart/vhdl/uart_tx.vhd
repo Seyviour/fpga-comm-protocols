@@ -16,7 +16,8 @@ entity UART_TX is
         i_Clock: in std_logic; 
         i_TX_Byte: in std_logic_vector(7 downto 0);
         o_TX_Serial: out std_logic;
-        i_TX_DV: in std_logic
+        i_TX_DV: in std_logic;
+        busy: out std_logic
     );
 end entity;
 
@@ -34,11 +35,13 @@ architecture RLT of UART_TX is
     signal r_TX_Bit_Index: integer range 0 to 7;
     signal r_TX_Bit: std_logic;
     signal r_TX_Byte: std_logic_vector(7 downto 0);
+    signal r_Received: std_logic; 
     
 
 begin
 
     o_TX_Serial <= r_TX_Bit; 
+
 
     process (i_Clock)
     begin
@@ -62,6 +65,7 @@ begin
                 else
                     r_Clock_Count <= 0;
                     if (i_TX_DV = '1') then
+                        r_Received <= '1'; 
                         r_TX_STATE <= TX_START_BIT; 
                         r_TX_Byte <= i_TX_Byte;
                     else
@@ -74,6 +78,7 @@ begin
     
             when TX_START_BIT =>
                 -- Transmit '0' for one bit length
+                r_Received <= '0';
                 if (r_Clock_Count < (CLOCKS_PER_BIT-1)) then
                     r_TX_Bit <= '0';
                     r_Clock_Count <= r_Clock_Count + 1; 
@@ -107,6 +112,28 @@ begin
             when others =>
                 r_TX_STATE <= IDLE;
         end case;
+    end process;
+
+    process (i_clock)
+    begin
+        if rising_edge(i_clock) then
+            case r_TX_STATE is  
+                when IDLE =>
+                    busy <= '0';
+                
+                when TX_STOP_BIT =>
+                    if (r_Received = '1') then
+                        busy <= '1';
+                    else
+                        busy <= '0';
+                    end if; 
+
+                when others => 
+                        busy <= '1';
+                
+            end case; 
+
+        end if;
     end process;
 
 end architecture;
