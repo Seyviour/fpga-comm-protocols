@@ -85,7 +85,7 @@ begin
 
                 
                 when RX_STOP_BIT => 
-                    if (r_Clock_Count < CLOCKS_PER_BIT) then
+                    if (r_Clock_Count < CLOCKS_PER_BIT ) then
                         r_Clock_Count <= r_Clock_Count + 1;
                         r_RX_STATE <= RX_STOP_BIT;
                     else
