@@ -45,78 +45,81 @@ begin
 
     process (i_Clock)
     begin
-        
-        case r_TX_STATE is
-            when IDLE =>
-                r_Clock_Count <= 0; 
-                r_TX_Bit_Index <= 0;
-                r_TX_Bit <= '1'; 
-
-                if (i_TX_DV = '1') then
-                    r_TX_STATE <= TX_START_BIT;
-                    r_TX_Byte <= i_TX_Byte; 
-                end if; 
-
-            when TX_STOP_BIT =>
-                -- transmit '1' for 1 bit length; 
-                if (r_Clock_Count < (CLOCKS_PER_BIT-1)) then
-                    r_Clock_Count <= r_Clock_Count + 1;
-                
-                if (i_TX_DV = '1') then
-                    r_Received <= '1'; 
-                    r_TX_Byte <= i_TX_Byte; 
-                end if; 
-                
-                else
-                    r_Clock_Count <= 0;
-                    if (r_Received = '1') then 
-                        r_TX_STATE <= TX_START_BIT;
-                        r_Received <= '0'; 
-                    else
-                        r_TX_STATE <= IDLE;
-                        r_Received <= '0';
-                    end if; 
-            
-                end if; 
-
-
-    
-            when TX_START_BIT =>
-                -- Transmit '0' for one bit length
-                r_Received <= '0';
-                if (r_Clock_Count < (CLOCKS_PER_BIT-1)) then
-                    r_TX_Bit <= '0';
-                    r_Clock_Count <= r_Clock_Count + 1; 
-                    r_TX_STATE <= TX_START_BIT;
-                else
+        if (i_clock'event and i_Clock = '1') then 
+            case r_TX_STATE is
+                when IDLE =>
                     r_Clock_Count <= 0; 
-                    r_TX_STATE <= TX_DATA_BITS;
-                    r_TX_Bit_Index <= 0; 
-            
-                end if; 
-            
-            when TX_DATA_BITS =>
-                -- Transmit data bits;
-                -- Takes 8 * CLOCKS_PER_BIT CLOCK CYCLES
-                if (r_Clock_Count < (CLOCKS_PER_BIT)) then
-                    r_Clock_Count <= r_Clock_Count + 1;
-                    r_TX_Bit <= r_TX_Byte(r_TX_Bit_Index); 
-                
-                else
-                    r_Clock_Count <= 0;
+                    r_TX_Bit_Index <= 0;
+                    r_TX_Bit <= '1'; 
 
-                    if (r_TX_Bit_Index < 7) then
-                        r_TX_Bit_Index <= r_TX_Bit_Index + 1;
-                    else
-                        -- Data transmission completed, movet to TX_STOP_STATE; 
-                        r_TX_STATE <= TX_STOP_BIT;
-                        r_TX_Bit_Index <= 0; 
+                    if (i_TX_DV = '1') then
+                        r_TX_STATE <= TX_START_BIT;
+                        r_TX_Byte <= i_TX_Byte; 
                     end if; 
-                end if;
 
-            when others =>
-                r_TX_STATE <= IDLE;
-        end case;
+                when TX_STOP_BIT =>
+                    -- transmit '1' for 1 bit length;
+                    
+                    r_TX_Bit <= '1'; 
+                    if (r_Clock_Count < (CLOCKS_PER_BIT-1)) then
+                        r_Clock_Count <= r_Clock_Count + 1;
+                    
+                    if (i_TX_DV = '1') then
+                        r_Received <= '1'; 
+                        r_TX_Byte <= i_TX_Byte; 
+                    end if; 
+                    
+                    else
+                        r_Clock_Count <= 0;
+                        if (r_Received = '1') then 
+                            r_TX_STATE <= TX_START_BIT;
+                            r_Received <= '0'; 
+                        else
+                            r_TX_STATE <= IDLE;
+                            r_Received <= '0';
+                        end if; 
+                
+                    end if; 
+
+
+        
+                when TX_START_BIT =>
+                    -- Transmit '0' for one bit length
+                    r_Received <= '0';
+                    if (r_Clock_Count < (CLOCKS_PER_BIT-1)) then
+                        r_TX_Bit <= '0';
+                        r_Clock_Count <= r_Clock_Count + 1; 
+                        r_TX_STATE <= TX_START_BIT;
+                    else
+                        r_Clock_Count <= 0; 
+                        r_TX_STATE <= TX_DATA_BITS;
+                        r_TX_Bit_Index <= 0; 
+                
+                    end if; 
+                
+                when TX_DATA_BITS =>
+                    -- Transmit data bits;
+                    -- Takes 8 * CLOCKS_PER_BIT CLOCK CYCLES
+                    if (r_Clock_Count < (CLOCKS_PER_BIT)) then
+                        r_Clock_Count <= r_Clock_Count + 1;
+                        r_TX_Bit <= r_TX_Byte(r_TX_Bit_Index); 
+                    
+                    else
+                        r_Clock_Count <= 0;
+
+                        if (r_TX_Bit_Index < 7) then
+                            r_TX_Bit_Index <= r_TX_Bit_Index + 1;
+                        else
+                            -- Data transmission completed, movet to TX_STOP_STATE; 
+                            r_TX_STATE <= TX_STOP_BIT;
+                            r_TX_Bit_Index <= 0; 
+                        end if; 
+                    end if;
+
+                when others =>
+                    r_TX_STATE <= IDLE;
+            end case;
+        end if; 
     end process;
 
     process (i_clock)
